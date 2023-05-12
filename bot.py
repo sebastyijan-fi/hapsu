@@ -45,33 +45,30 @@ async def kysy(ctx, *, arg):
         system_message = config.get('system_message', "")
         assistant_message = config.get('assistant_message', {})
 
-        # Construct the conversation history
-        conversation = []
-        conversation.append({"role": "system", "content": system_message})
-        conversation.append({"role": "user", "content": arg})
+        # Add the user's message to the conversation
+        previous_messages = assistant_message.get("previous_messages", [])
+        previous_messages.append({"role": "user", "content": arg})
+        
+        # Truncate the conversation if it exceeds a certain number of messages
+        max_messages = 10  # Adjust this value based on your requirements
+        if len(previous_messages) > max_messages:
+            previous_messages = previous_messages[-max_messages:]
 
-        # Add previous assistant messages to the conversation
-        previous_assistant_messages = assistant_message.get("previous_messages", [])
-        for message in previous_assistant_messages:
-            conversation.append({"role": "assistant", "content": message})
+        # Construct the conversation
+        conversation = [{"role": "system", "content": system_message}] + previous_messages
 
         # Call OpenAI API to generate the assistant's response
-        response = openai.Completion.create(
-            model="text-davinci-003",  # Use the GPT-3.5 Turbo model
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
             messages=conversation,
-            max_tokens=50,  # Adjust the maximum number of tokens as per your requirement
         )
 
         # Extract the assistant's response from the API response
-        assistant_response = response.choices[0].message.content.strip()
+        assistant_response = response['choices'][0]['message']['content'].strip()
 
-        # Store the assistant's response in the channel-specific configuration
-        assistant_message["previous_messages"].append(assistant_response)
-
-        # Use the assistant's response for further processing or sending to the user
-        # ...
-
-        # Update the channel-specific configuration
+        # Add the assistant's response to the conversation and update the channel-specific configuration
+        previous_messages.append({"role": "assistant", "content": assistant_response})
+        assistant_message["previous_messages"] = previous_messages
         channel_configurations[channel_id] = config
 
         # Send the assistant's response to the user

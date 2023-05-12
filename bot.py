@@ -32,6 +32,18 @@ async def on_ready():
                         # Other channel-specific settings
                     }
                     print(f"Initialized channel configuration for channel {channel.id}")
+                    
+@bot.event
+async def on_guild_channel_create(channel):
+    if isinstance(channel, discord.TextChannel):
+        if channel.id not in channel_configurations:
+            channel_configurations[channel.id] = {
+                'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
+                'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
+                'previous_messages': [],
+                # Other channel-specific settings
+            }
+            print(f"Initialized channel configuration for channel {channel.id}")
 
 @bot.command()
 async def kysy(ctx, *, arg):

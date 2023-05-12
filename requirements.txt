@@ -1,0 +1,4 @@
+discord.py
+nest-asyncio
+python-dotenv
+openai

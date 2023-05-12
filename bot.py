@@ -94,7 +94,7 @@ async def hahmo(ctx, *, arg=None):
             print(f"System message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['system_message']
-            await ctx.send(f"Current system message content: {current_message}")
+            await ctx.send(f"Hahmosi: {current_message}")
             print(f"Current system message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("Joku meni vikaan...Apuva.")
@@ -111,7 +111,7 @@ async def ohje(ctx, *, arg=None):
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['assistant_message']
-            await ctx.send(f"Current assistant message content: {current_message}")
+            await ctx.send(f"Ohjeesi: {current_message}")
             print(f"Current assistant message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("Joku meni vikaan...Apuva.")

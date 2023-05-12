@@ -25,6 +25,6 @@ Hapsu on avustaja Discord-botti, joka hyödyntää OpenAI:n tekstigenerointipalv
 - Hapsu-botti voi vaatia mukauttamista ja laajentamista riippuen käyttötapauksista ja vaatimuksista.
 - Muista noudattaa Discordin käyttöehtoja ja ohjeita käyttäessäsi bottia.
 
-## Työn alla - Ei toimi vielä
+## Todellakin toimii!
 
 

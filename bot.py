@@ -90,14 +90,14 @@ async def hahmo(ctx, *, arg=None):
         config = channel_configurations[channel_id]
         if arg is not None:
             config['system_message'] = arg
-            await ctx.send(f"Updated system message content to: {arg}")
+            await ctx.send(f"Päivitit hahmosi: {arg}")
             print(f"System message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['system_message']
             await ctx.send(f"Current system message content: {current_message}")
             print(f"Current system message content for channel {channel_id}: {current_message}")
     else:
-        await ctx.send("This command is not available in the current channel.")
+        await ctx.send("Joku meni vikaan...Apuva.")
 
 
 @bot.command()
@@ -107,14 +107,14 @@ async def ohje(ctx, *, arg=None):
         config = channel_configurations[channel_id]
         if arg is not None:
             config['assistant_message'] = arg
-            await ctx.send(f"Updated assistant message content to: {arg}")
+            await ctx.send(f"Päivitit ohjeesi: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['assistant_message']
             await ctx.send(f"Current assistant message content: {current_message}")
             print(f"Current assistant message content for channel {channel_id}: {current_message}")
     else:
-        await ctx.send("This command is not available in the current channel.")
+        await ctx.send("Joku meni vikaan...Apuva.")
 
 
 

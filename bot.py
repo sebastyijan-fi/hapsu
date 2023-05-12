@@ -1,6 +1,7 @@
 import discord
 import nest_asyncio
 from discord.ext import commands
+from discord.ext.commands import Command
 import os
 from dotenv import load_dotenv
 import openai
@@ -26,16 +27,11 @@ async def on_ready():
                 if channel.id not in channel_configurations:
                     channel_configurations[channel.id] = {
                         'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
-                        'assistant_message': {
-                            "role": "assistant",
-                            "content": "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
-                            "previous_messages": []
-                        },
+                        'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
+                        'previous_messages': [],
                         # Other channel-specific settings
                     }
                     print(f"Initialized channel configuration for channel {channel.id}")
-
-
 
 @bot.command()
 async def kysy(ctx, *, arg):
@@ -43,19 +39,19 @@ async def kysy(ctx, *, arg):
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         system_message = config.get('system_message', "")
-        assistant_message = config.get('assistant_message', {})
+        assistant_message = config.get('assistant_message', "")
 
         # Add the user's message to the conversation
-        previous_messages = assistant_message.get("previous_messages", [])
+        previous_messages = config.get("previous_messages", [])
         previous_messages.append({"role": "user", "content": arg})
         
         # Truncate the conversation if it exceeds a certain number of messages
-        max_messages = 10  # Adjust this value based on your requirements
+        max_messages = 3  # Adjust this value based on your requirements
         if len(previous_messages) > max_messages:
             previous_messages = previous_messages[-max_messages:]
 
-        # Construct the conversation
-        conversation = [{"role": "system", "content": system_message}] + previous_messages
+        # Construct the conversation with the system and assistant messages
+        conversation = [{"role": "system", "content": system_message}] + [{"role": "user", "content": assistant_message}] + previous_messages
 
         # Call OpenAI API to generate the assistant's response
         response = openai.ChatCompletion.create(
@@ -68,11 +64,12 @@ async def kysy(ctx, *, arg):
 
         # Add the assistant's response to the conversation and update the channel-specific configuration
         previous_messages.append({"role": "assistant", "content": assistant_response})
-        assistant_message["previous_messages"] = previous_messages
+        config["previous_messages"] = previous_messages  # Save only the user and assistant messages
         channel_configurations[channel_id] = config
 
         # Send the assistant's response to the user
         await ctx.send(assistant_response)
+
 
 @bot.command()
 async def hahmo(ctx, *, arg=None):
@@ -97,15 +94,17 @@ async def ohje(ctx, *, arg=None):
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
-            config['assistant_message']['content'] = arg
+            config['assistant_message'] = arg
             await ctx.send(f"Updated assistant message content to: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
         else:
-            current_message = config['assistant_message']['content']
+            current_message = config['assistant_message']
             await ctx.send(f"Current assistant message content: {current_message}")
             print(f"Current assistant message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("This command is not available in the current channel.")
+
+
 
         
 @bot.command()

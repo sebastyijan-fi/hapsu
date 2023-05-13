@@ -25,6 +25,16 @@ Hapsu on avustaja Discord-botti, joka hyödyntää OpenAI:n tekstigenerointipalv
 - Hapsu-botti voi vaatia mukauttamista ja laajentamista riippuen käyttötapauksista ja vaatimuksista.
 - Muista noudattaa Discordin käyttöehtoja ja ohjeita käyttäessäsi bottia.
 
-## Todellakin toimii!
+## Hapsu-bottin asennus ja käyttöönotto
+
+Hapsu-bottin asentaminen ja käyttöönotto on helppoa seuraavien ohjeiden avulla:
+
+1. **Suorita asennusskripti**: Suorita `run_bot.sh`-skripti. Tämä skripti hoitaa kaiken tarvittavan asennuksen, kuten riippuvuuksien asennuksen ja palvelimen konfiguroinnin.
+
+2. **Anna API-avaimet**: Skripti pyytää sinua syöttämään OpenAI:n ja Discordin API-avaimet. Avaimet tallennetaan `.env`-tiedostoon.
+
+3. **Käynnistä botti**: Skripti käynnistää botin automaattisesti. Voit tarkistaa botin tilan PM2:n avulla komennolla `pm2 status`.
+
+Huomaa: Skripti päivittää palvelimen ja tekee git-pullin päivittäin keskiyöllä.
 
 

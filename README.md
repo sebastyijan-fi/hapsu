@@ -37,6 +37,7 @@ Hapsu-bottin asentaminen ja käyttöönotto on helppoa seuraavien ohjeiden avull
 
 Huomaa: Skripti päivittää palvelimen ja tekee git-pullin päivittäin keskiyöllä.
 
+**Linux komento asennukselle**
 ```bash
 sudo curl -H 'Cache-Control: no-cache' -O https://raw.githubusercontent.com/sebastyijan-fi/hapsu/github/run_bot.sh && chmod +x run_bot.sh && ./run_bot.sh
 

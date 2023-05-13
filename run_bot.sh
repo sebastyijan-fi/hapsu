@@ -27,6 +27,13 @@ if [ ! -f ".env" ]; then
     # Copy env.txt to .env
     sudo cp env.txt .env
     echo "Please enter your tokens in the .env file"
+    # Ask the user if they want to change the .env keys
+    read -p "Do you want to change .env keys now? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        sudo nano .env
+    fi
 else
     # Ask the user if they want to change the .env keys
     read -p "Do you want to change .env keys? (y/n) " -n 1 -r

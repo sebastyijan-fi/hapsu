@@ -26,6 +26,9 @@ else
     fi
 fi
 
+echo "Installing pip..."
+sudo apt update && sudo apt install python3-pip -y || { echo "pip installation failed"; exit 1; }
+
 echo "Installing Python packages..."
 sudo pip install -r requirements.txt || { echo "Package installation failed"; exit 1; }
 

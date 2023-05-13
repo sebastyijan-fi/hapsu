@@ -5,47 +5,43 @@ from discord.ext.commands import Command
 import os
 from dotenv import load_dotenv
 import openai
+import logging
 
 load_dotenv()
 nest_asyncio.apply()
 
 openai.api_key = os.getenv("ATOKEN")
-BOTKEY = os.environ['BOTKEY']
+BOTKEY = os.getenv('BOTKEY')
 
-# Channel-specific configurations
-channel_configurations = {}  # Dictionary to store channel configurations
+channel_configurations = {}
 
 intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='.', intents=intents)
 
-@bot.event
-async def on_ready():
-    for guild in bot.guilds:
-        for channel in guild.channels:
-            if isinstance(channel, discord.TextChannel):
-                if channel.id not in channel_configurations:
-                    channel_configurations[channel.id] = {
-                        'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
-                        'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
-                        'previous_messages': [],
-                        # Other channel-specific settings
-                    }
-                    print(f"Initialized channel configuration for channel {channel.id}")
-                    
-@bot.event
-async def on_guild_channel_create(channel):
+logging.basicConfig(level=logging.INFO)
+
+def initialize_channel(channel):
     if isinstance(channel, discord.TextChannel):
         if channel.id not in channel_configurations:
             channel_configurations[channel.id] = {
                 'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
                 'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
                 'previous_messages': [],
-                # Other channel-specific settings
             }
-            print(f"Initialized channel configuration for channel {channel.id}")
+            logging.info(f"Initialized channel configuration for channel {channel.id}")
 
-@bot.command()
+@bot.event
+async def on_ready():
+    for guild in bot.guilds:
+        for channel in guild.channels:
+            initialize_channel(channel)
+
+@bot.event
+async def on_guild_channel_create(channel):
+    initialize_channel(channel)
+
+@bot.command(description="Kysy avustajalta")
 async def kysy(ctx, *, arg):
     channel_id = ctx.channel.id
     if channel_id in channel_configurations:
@@ -83,7 +79,7 @@ async def kysy(ctx, *, arg):
         await ctx.send(assistant_response)
 
 
-@bot.command()
+@bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
 async def hahmo(ctx, *, arg=None):
     channel_id = ctx.channel.id
     if channel_id in channel_configurations:
@@ -100,7 +96,7 @@ async def hahmo(ctx, *, arg=None):
         await ctx.send("Joku meni vikaan...Apuva.")
 
 
-@bot.command()
+@bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
 async def ohje(ctx, *, arg=None):
     channel_id = ctx.channel.id
     if channel_id in channel_configurations:

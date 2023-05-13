@@ -2,6 +2,7 @@ import discord
 import nest_asyncio
 from discord.ext import commands
 from discord.ext.commands import Command
+from discord import Permissions
 import os
 from dotenv import load_dotenv
 import openai
@@ -14,6 +15,18 @@ openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
 
 channel_configurations = {}
+
+permissions = Permissions(
+    add_reactions=True,
+    send_messages=True,
+    send_tts_messages=True,
+    embed_links=True,
+    attach_files=True,
+    read_message_history=True,
+    mention_everyone=True,
+    use_external_emojis=True,
+    view_channel=True,
+)
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -112,6 +125,34 @@ async def ohje(ctx, *, arg=None):
     else:
         await ctx.send("Joku meni vikaan...Apuva.")
 
+@bot.command()
+async def apua(ctx):
+    embed = discord.Embed(
+        title="Hapsu Botin Ohjeet",
+        description="Hapsu on avustaja Discord-botti, joka hyödyntää OpenAI:n tekstigenerointipalvelua vastatakseen käyttäjän viesteihin. Tässä ovat käytettävissä olevat komennot:",
+        color=discord.Color.blue()
+    )
+
+    embed.add_field(
+        name="Aloita keskustely",
+        value="Aloita keskustelu Hapsu-botin kanssa. Käyttö: `.kysy ...`",
+        inline=False
+    )
+   
+    embed.add_field(
+    name="Muokkaa tai katso nykyinen hahmo",
+    value="Muokkaa botin hahmoa. `.ohje ...`\nKatso botin nykyinen hahmo. `.ohje`",
+    inline=False
+)
+
+    embed.add_field(
+    name="Muokkaa tai katso nykyinen ohje",
+    value="Muokkaa botin ohjeita. `.ohje ...`\nKatso botin nykyinen ohje. `.ohje`",
+    inline=False
+)
+
+
+    await ctx.send(embed=embed)
 
 
         

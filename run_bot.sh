@@ -5,7 +5,7 @@ echo "Starting setup..."
 # Check if the directory for the repo exists
 if [ ! -d "/hapsu" ]; then
     echo "Cloning the repo..."
-    sudo git clone git@github.com:sebastyijan-fi/hapsu.git /hapsu || { echo "Git clone failed"; exit 1; }
+    sudo git clone https://github.com/sebastyijan-fi/hapsu.git /hapsu || { echo "Git clone failed"; exit 1; }
 fi
 
 # Navigate to the repo directory

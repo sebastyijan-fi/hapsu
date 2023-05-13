@@ -7,6 +7,12 @@ echo "Starting setup..."
 echo "Installing pip..."
 sudo apt update && sudo apt install python3-pip -y || { echo "pip installation failed"; exit 1; }
 
+echo "Installing Node.js and npm..."
+sudo apt install nodejs npm -y || { echo "Node.js/npm installation failed"; exit 1; }
+
+echo "Installing PM2..."
+sudo npm install pm2 -g || { echo "PM2 installation failed"; exit 1; }
+
 # Check if the directory for the repo exists
 if [ ! -d "/hapsu" ]; then
     echo "Cloning the repo..."
@@ -35,7 +41,7 @@ echo "Installing Python packages..."
 sudo pip install -r requirements.txt || { echo "Package installation failed"; exit 1; }
 
 echo "Starting the bot with PM2..."
-sudo pm2 start bot.py --name hapsu || { echo "PM2 start failed"; exit 1; }
+sudo   pm2 start bot.py --name hapsu --interpreter python3 || { echo "PM2 start failed"; exit 1; }
 
 echo "Saving the PM2 process list..."
 sudo pm2 save || { echo "PM2 save failed"; exit 1; }

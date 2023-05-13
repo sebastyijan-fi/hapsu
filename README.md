@@ -39,7 +39,8 @@ Huomaa: Skripti p채ivitt채채 palvelimen ja tekee git-pullin p채ivitt채in keskiy�
 
 Linux:
 
-curl -O https://raw.githubusercontent.com/sebastyijan-fi/hapsu/github/run_bot.sh && chmod +x run_bot.sh && ./run_bot.sh
+sudo curl -H 'Cache-Control: no-cache' -O https://raw.githubusercontent.com/sebastyijan-fi/hapsu/github/run_bot.sh && chmod +x run_bot.sh && ./run_bot.sh
+
 
 
 

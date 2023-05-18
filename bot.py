@@ -1,6 +1,5 @@
 import discord
 import nest_asyncio
-import asyncio
 from discord.ext import commands
 from discord.ext.commands import Command
 from discord import Permissions
@@ -107,8 +106,7 @@ async def kysy(ctx, *, arg):
         conversation = [{"role": "system", "content": system_message}] + [{"role": "user", "content": "Instructions, not part of the user message: "+assistant_message+"User message starts: "}] + previous_messages
 
         # Call OpenAI API to generate the assistant's response
-        loop = asyncio.get_event_loop()
-        response = await loop.run_in_executor(None, lambda: openai.ChatCompletion.create)(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=conversation,
         )

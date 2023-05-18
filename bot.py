@@ -15,17 +15,19 @@ nest_asyncio.apply()
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
 
-def save_channel_configs():
+def save_channel_configs(channel_configurations):
     with open('channel_configurations.json', 'w') as f:
         json.dump(channel_configurations, f)
+
         
 def load_channel_configs():
-    global channel_configurations
     try:
         with open('channel_configurations.json', 'r') as f:
             channel_configurations = json.load(f)
     except FileNotFoundError:
         channel_configurations = {}
+    return channel_configurations
+
 
 permissions = Permissions(
     add_reactions=True,
@@ -57,9 +59,12 @@ def initialize_channel(channel):
 
 @bot.event
 async def on_ready():
+    global channel_configurations
+    channel_configurations = load_channel_configs()
     for guild in bot.guilds:
         for channel in guild.channels:
             initialize_channel(channel)
+
 
 @bot.event
 async def on_guild_channel_create(channel):
@@ -105,21 +110,21 @@ async def kysy(ctx, *, arg):
 
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
 async def hahmo(ctx, *, arg=None):
+    global channel_configurations  # Declare that you're using the global variable here
     channel_id = ctx.channel.id
-    channel_configurations = load_channel_configs()
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
             config['system_message'] = arg
             await ctx.send(f"Päivitit hahmosi: {arg}")
             print(f"System message content for channel {channel_id} updated to: {arg}")
-            save_channel_configs(channel_configurations)
         else:
             current_message = config['system_message']
             await ctx.send(f"Hahmosi: {current_message}")
             print(f"Current system message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("Joku meni vikaan...Apuva.")
+    save_channel_configs(channel_configurations)  # Save the configurations after modifying them
 
 
 @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")

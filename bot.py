@@ -65,15 +65,18 @@ def initialize_channel(channel):
                 'previous_messages': [],
             }
             logging.info(f"Initialized channel configuration for channel {channel.id}")
-
+            
 @bot.event
 async def on_ready():
     global channel_configurations
-    channel_configurations = await load_channel_configurations()  # await added here
+    channel_configurations = load_channel_configurations()
     for guild in bot.guilds:
         for channel in guild.channels:
             if channel.id not in channel_configurations:
                 initialize_channel(channel)
+            else:
+                logging.info(f"Configuration already exists for channel {channel.id}")
+
 
 
 @bot.event

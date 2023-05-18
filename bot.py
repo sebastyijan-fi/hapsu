@@ -93,10 +93,14 @@ async def kysy(ctx, *, arg):
         previous_messages = config.get("previous_messages", [])
         previous_messages.append({"role": "user", "content": arg})
         
+        logging.info(f'After adding user message: {previous_messages}')
+
         # Truncate the conversation if it exceeds a certain number of messages
         max_messages = 3  # Adjust this value based on your requirements
         if len(previous_messages) > max_messages:
             previous_messages = previous_messages[-max_messages:]
+
+        logging.info(f'After truncating messages: {previous_messages}')
 
         # Construct the conversation with the system and assistant messages
         conversation = [{"role": "system", "content": system_message}] + [{"role": "user", "content": "Instructions, not part of the user message: "+assistant_message+"User message starts: "}] + previous_messages
@@ -115,8 +119,10 @@ async def kysy(ctx, *, arg):
         config["previous_messages"] = previous_messages  # Save only the user and assistant messages
         channel_configurations[channel_id] = config
 
+        logging.info(f'After adding assistant response: {previous_messages}')
+
         # Send the assistant's response to the user
-        await ctx.send(assistant_response)
+        await ctx.send(assistant_response) 
 
 
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")

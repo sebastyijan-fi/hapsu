@@ -48,6 +48,7 @@ bot = commands.Bot(command_prefix='.', intents=intents)
 logging.basicConfig(level=logging.INFO)
 
 def initialize_channel(channel):
+    global channel_configurations
     if isinstance(channel, discord.TextChannel):
         if channel.id not in channel_configurations:
             channel_configurations[channel.id] = {
@@ -56,15 +57,15 @@ def initialize_channel(channel):
                 'previous_messages': [],
             }
             logging.info(f"Initialized channel configuration for channel {channel.id}")
-
+            save_channel_configs(channel_configurations)  # Save the configurations after initializing them
 @bot.event
 async def on_ready():
     global channel_configurations
     channel_configurations = load_channel_configs()
     for guild in bot.guilds:
         for channel in guild.channels:
-            initialize_channel(channel)
-
+            if channel.id not in channel_configurations:
+                initialize_channel(channel)
 
 @bot.event
 async def on_guild_channel_create(channel):

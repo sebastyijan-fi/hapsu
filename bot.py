@@ -13,25 +13,19 @@ load_dotenv()
 nest_asyncio.apply()
 
 # Persisten data layer in JSON
-# Your JSON file reading/writing functions
-async def load_channel_configurations():
-    try:
-        with open("channel_configurations.json", "r") as file:
-            logging.debug("Opened channel_configurations.json for reading")
-            configurations = json.load(file)
-            logging.debug(f"Loaded configurations: {configurations}")
-            return configurations
-    except FileNotFoundError:
-        logging.warning("channel_configurations.json not found, returning empty dict")
-        return {}
+def load_channel_configurations():
+    if not os.path.isfile("channel_configurations.json"):
+        with open("channel_configurations.json", "w") as file:
+            json.dump({}, file)  # Create the file with an empty dictionary if it doesn't exist
+    with open("channel_configurations.json", "r") as file:
+        configurations = json.load(file)
+        return configurations
 
-
-def save_channel_configurations():
+def save_channel_configurations(configurations):
     with open("channel_configurations.json", "w") as file:
         logging.debug("Opened channel_configurations.json for writing")
-        json.dump(channel_configurations, file)
-        logging.debug(f"Wrote configurations: {channel_configurations}")
-
+        json.dump(configurations, file)
+        logging.debug(f"Wrote configurations: {configurations}")
 
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
@@ -54,7 +48,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix='.', intents=intents)
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 def initialize_channel(channel):
     if isinstance(channel, discord.TextChannel):
@@ -65,19 +59,14 @@ def initialize_channel(channel):
                 'previous_messages': [],
             }
             logging.info(f"Initialized channel configuration for channel {channel.id}")
-            
-channel_configurations = load_channel_configurations()
 
 @bot.event
 async def on_ready():
+    global channel_configurations
+    channel_configurations = load_channel_configurations()
     for guild in bot.guilds:
         for channel in guild.channels:
-            if channel.id not in channel_configurations:
-                initialize_channel(channel)
-            else:
-                logging.info(f"Configuration already exists for channel {channel.id}")
-
-
+            initialize_channel(channel)
 
 
 @bot.event

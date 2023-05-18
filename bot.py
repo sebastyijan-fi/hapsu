@@ -7,9 +7,22 @@ import os
 from dotenv import load_dotenv
 import openai
 import logging
+import json
 
 load_dotenv()
 nest_asyncio.apply()
+
+# Persisten data layer in JSON
+def load_channel_configurations():
+    try:
+        with open("channel_configurations.json", "r") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+def save_channel_configurations():
+    with open("channel_configurations.json", "w") as file:
+        json.dump(channel_configurations, file)
 
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
@@ -46,6 +59,7 @@ def initialize_channel(channel):
 
 @bot.event
 async def on_ready():
+    channel_configurations = load_channel_configurations()
     for guild in bot.guilds:
         for channel in guild.channels:
             initialize_channel(channel)
@@ -99,6 +113,7 @@ async def hahmo(ctx, *, arg=None):
         config = channel_configurations[channel_id]
         if arg is not None:
             config['system_message'] = arg
+            save_channel_configurations()
             await ctx.send(f"Päivitit hahmosi: {arg}")
             print(f"System message content for channel {channel_id} updated to: {arg}")
         else:
@@ -116,6 +131,7 @@ async def ohje(ctx, *, arg=None):
         config = channel_configurations[channel_id]
         if arg is not None:
             config['assistant_message'] = arg
+            save_channel_configurations()
             await ctx.send(f"Päivitit ohjeesi: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
         else:

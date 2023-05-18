@@ -54,7 +54,11 @@ echo "Saving the PM2 process list..."
 sudo pm2 save || { echo "PM2 save failed"; exit 1; }
 
 echo "Setting up cron jobs..."
-(crontab -l ; echo "0 0 * * * cd /hapsu && git pull") | crontab -
+
+# Pull updates from git every 3 days at 12:00 AM
+(crontab -l ; echo "0 0 */3 * * cd /hapsu && git pull && sudo pm2 restart hapsu") | crontab -
+
+# This will update and upgrade the server every day at 12:00 AM
 (crontab -l ; echo "0 0 * * * apt-get update && apt-get upgrade -y") | crontab -
 
 echo "Setup complete!"

@@ -13,16 +13,24 @@ load_dotenv()
 nest_asyncio.apply()
 
 # Persisten data layer in JSON
+# Your JSON file reading/writing functions
 def load_channel_configurations():
     try:
         with open("channel_configurations.json", "r") as file:
-            return json.load(file)
+            logging.debug("Opened channel_configurations.json for reading")
+            configurations = json.load(file)
+            logging.debug(f"Loaded configurations: {configurations}")
+            return configurations
     except FileNotFoundError:
+        logging.warning("channel_configurations.json not found, returning empty dict")
         return {}
 
 def save_channel_configurations():
     with open("channel_configurations.json", "w") as file:
+        logging.debug("Opened channel_configurations.json for writing")
         json.dump(channel_configurations, file)
+        logging.debug(f"Wrote configurations: {channel_configurations}")
+
 
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
@@ -107,37 +115,37 @@ async def kysy(ctx, *, arg):
         # Send the assistant's response to the user
         await ctx.send(assistant_response)
 
-    @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
-    async def hahmo(ctx, *, arg=None):
-        channel_id = ctx.channel.id
-        if channel_id in channel_configurations:
-            config = channel_configurations[channel_id]
-            if arg is not None:
-                config['system_message'] = arg
-                channel_configurations[channel_id] = config  # Update the configurations
-                await ctx.send(f"Päivitit hahmosi: {arg}")
-                print(f"System message content for channel {channel_id} updated to: {arg}")
-                save_channel_configurations()  # Save changes
-            else:
-                current_message = config['system_message']
-                await ctx.send(f"Hahmosi: {current_message}")
-                print(f"Current system message content for channel {channel_id}: {current_message}")
+@bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
+async def hahmo(ctx, *, arg=None):
+    channel_id = ctx.channel.id
+    if channel_id in channel_configurations:
+        config = channel_configurations[channel_id]
+        if arg is not None:
+            config['system_message'] = arg
+            channel_configurations[channel_id] = config  # Update the configurations
+            await ctx.send(f"Päivitit hahmosi: {arg}")
+            print(f"System message content for channel {channel_id} updated to: {arg}")
+            save_channel_configurations()  # Save changes
+        else:
+            current_message = config['system_message']
+            await ctx.send(f"Hahmosi: {current_message}")
+            print(f"Current system message content for channel {channel_id}: {current_message}")
 
-    @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
-    async def ohje(ctx, *, arg=None):
-        channel_id = ctx.channel.id
-        if channel_id in channel_configurations:
-            config = channel_configurations[channel_id]
-            if arg is not None:
-                config['assistant_message'] = arg
-                channel_configurations[channel_id] = config  # Update the configurations
-                await ctx.send(f"Päivitit ohjeesi: {arg}")
-                print(f"Assistant message content for channel {channel_id} updated to: {arg}")
-                save_channel_configurations()  # Save changes
-            else:
-                current_message = config['assistant_message']
-                await ctx.send(f"Ohjeesi: {current_message}")
-                print(f"Current assistant message content for channel {channel_id}: {current_message}")
+@bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
+async def ohje(ctx, *, arg=None):
+    channel_id = ctx.channel.id
+    if channel_id in channel_configurations:
+        config = channel_configurations[channel_id]
+        if arg is not None:
+            config['assistant_message'] = arg
+            channel_configurations[channel_id] = config  # Update the configurations
+            await ctx.send(f"Päivitit ohjeesi: {arg}")
+            print(f"Assistant message content for channel {channel_id} updated to: {arg}")
+            save_channel_configurations()  # Save changes
+        else:
+            current_message = config['assistant_message']
+            await ctx.send(f"Ohjeesi: {current_message}")
+            print(f"Current assistant message content for channel {channel_id}: {current_message}")
 
 
 

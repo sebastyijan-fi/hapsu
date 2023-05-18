@@ -16,17 +16,22 @@ openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
 
 def save_channel_configs(channel_configurations):
+    logging.info('Saving channel configurations')
     with open('channel_configurations.json', 'w') as f:
         json.dump(channel_configurations, f)
+    logging.info('Channel configurations saved successfully')
 
-        
 def load_channel_configs():
     try:
+        logging.info('Loading channel configurations')
         with open('channel_configurations.json', 'r') as f:
             channel_configurations = json.load(f)
+        logging.info('Channel configurations loaded successfully')
     except FileNotFoundError:
+        logging.warning('Channel configurations file not found, initializing an empty dictionary')
         channel_configurations = {}
     return channel_configurations
+
 
 
 permissions = Permissions(

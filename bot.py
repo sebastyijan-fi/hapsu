@@ -56,14 +56,15 @@ def initialize_channel(channel):
     global channel_configurations
     if isinstance(channel, discord.TextChannel):
         # Do not overwrite the existing configuration
-        if channel.id not in channel_configurations:
-            channel_configurations[channel.id] = {
+        if str(channel.id) not in channel_configurations:  # Convert channel.id to str
+            channel_configurations[str(channel.id)] = {  # Convert channel.id to str
                 'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
                 'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
                 'previous_messages': [],
             }
             logging.info(f"Initialized channel configuration for channel {channel.id}")
             save_channel_configs(channel_configurations)  # Save the configurations after initializing them
+
 
 @bot.event
 async def on_ready():
@@ -72,8 +73,9 @@ async def on_ready():
     for guild in bot.guilds:
         for channel in guild.channels:
             # Only initialize the channel if it's not already in channel_configurations
-            if channel.id not in channel_configurations:
+            if str(channel.id) not in channel_configurations:  # Convert channel.id to str
                 initialize_channel(channel)
+
 
 @bot.event
 async def on_guild_channel_create(channel):

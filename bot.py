@@ -105,7 +105,6 @@ async def kysy(ctx, *, arg):
         # Send the assistant's response to the user
         await ctx.send(assistant_response)
 
-
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
 async def hahmo(ctx, *, arg=None):
     channel_id = ctx.channel.id
@@ -113,6 +112,7 @@ async def hahmo(ctx, *, arg=None):
         config = channel_configurations[channel_id]
         if arg is not None:
             config['system_message'] = arg
+            channel_configurations[channel_id] = config  # Update the configurations
             await ctx.send(f"Päivitit hahmosi: {arg}")
             print(f"System message content for channel {channel_id} updated to: {arg}")
             save_channel_configurations()  # Save changes
@@ -128,6 +128,7 @@ async def ohje(ctx, *, arg=None):
         config = channel_configurations[channel_id]
         if arg is not None:
             config['assistant_message'] = arg
+            channel_configurations[channel_id] = config  # Update the configurations
             await ctx.send(f"Päivitit ohjeesi: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
             save_channel_configurations()  # Save changes
@@ -135,6 +136,7 @@ async def ohje(ctx, *, arg=None):
             current_message = config['assistant_message']
             await ctx.send(f"Ohjeesi: {current_message}")
             print(f"Current assistant message content for channel {channel_id}: {current_message}")
+
 
 
 @bot.command()

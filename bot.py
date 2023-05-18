@@ -64,6 +64,7 @@ async def on_ready():
     channel_configurations = load_channel_configs()
     for guild in bot.guilds:
         for channel in guild.channels:
+            # Only initialize the channel if it's not already in channel_configurations
             if channel.id not in channel_configurations:
                 initialize_channel(channel)
 

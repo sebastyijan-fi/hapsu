@@ -68,11 +68,13 @@ def initialize_channel(channel):
 @bot.event
 async def on_ready():
     global channel_configurations
-    channel_configurations = load_channel_configurations()
+    saved_configurations = load_channel_configurations()
     for guild in bot.guilds:
         for channel in guild.channels:
-            initialize_channel(channel)
-
+            if channel.id in saved_configurations:
+                channel_configurations[channel.id] = saved_configurations[channel.id]
+            else:
+                initialize_channel(channel)
 
 @bot.event
 async def on_guild_channel_create(channel):

@@ -12,23 +12,33 @@ import json
 load_dotenv()
 nest_asyncio.apply()
 
-# Persisten data layer in JSON
-def load_channel_configurations():
-    if not os.path.isfile("channel_configurations.json"):
-        with open("channel_configurations.json", "w") as file:
-            json.dump({}, file)  # Create the file with an empty dictionary if it doesn't exist
-    with open("channel_configurations.json", "r") as file:
-        configurations = json.load(file)
-        return configurations
-
-def save_channel_configurations(configurations):
-    with open("channel_configurations.json", "w") as file:
-        logging.debug("Opened channel_configurations.json for writing")
-        json.dump(configurations, file)
-        logging.debug(f"Wrote configurations: {configurations}")
-
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
+
+#PERSISTENT MEMORY
+
+import sqlite3
+conn = sqlite3.connect('config.db')  # Creates a file named mydatabase.db
+c = conn.cursor()
+
+# Create table
+c.execute('''CREATE TABLE IF NOT EXISTS channel_configurations
+             (channel_id text, system_message text, assistant_message text, previous_messages text)''')
+conn.commit()
+
+def get_channel_configurations(channel_id):
+    c.execute("SELECT * FROM channel_configurations WHERE channel_id=?", (channel_id,))
+    return c.fetchone()
+
+def set_channel_configurations(channel_id, system_message, assistant_message, previous_messages):
+    # Convert the previous_messages list to a string to store in SQLite
+    previous_messages_str = json.dumps(previous_messages)
+    data = (channel_id, system_message, assistant_message, previous_messages_str)
+
+    # Insert a row of data
+    c.execute("INSERT OR REPLACE INTO channel_configurations VALUES (?,?,?,?)", data)
+    conn.commit()
+
 
 channel_configurations = {}
 
@@ -62,12 +72,9 @@ def initialize_channel(channel):
 
 @bot.event
 async def on_ready():
-    global channel_configurations
-    channel_configurations = load_channel_configurations()
     for guild in bot.guilds:
         for channel in guild.channels:
             initialize_channel(channel)
-
 
 @bot.event
 async def on_guild_channel_create(channel):
@@ -75,14 +82,13 @@ async def on_guild_channel_create(channel):
 
 @bot.command(description="Kysy avustajalta")
 async def kysy(ctx, *, arg):
-    channel_id = ctx.channel.id
-    if channel_id in channel_configurations:
-        config = channel_configurations[channel_id]
-        system_message = config.get('system_message', "")
-        assistant_message = config.get('assistant_message', "")
+    channel_id = str(ctx.channel.id)
+    config = get_channel_configurations(channel_id)
+    if config is not None:
+        system_message, assistant_message, previous_messages_str = config[1:]
+        previous_messages = json.loads(previous_messages_str)
 
         # Add the user's message to the conversation
-        previous_messages = config.get("previous_messages", [])
         previous_messages.append({"role": "user", "content": arg})
         
         # Truncate the conversation if it exceeds a certain number of messages
@@ -104,44 +110,47 @@ async def kysy(ctx, *, arg):
 
         # Add the assistant's response to the conversation and update the channel-specific configuration
         previous_messages.append({"role": "assistant", "content": assistant_response})
-        config["previous_messages"] = previous_messages  # Save only the user and assistant messages
-        channel_configurations[channel_id] = config
+        set_channel_configurations(channel_id, system_message, assistant_message, previous_messages)
 
         # Send the assistant's response to the user
         await ctx.send(assistant_response)
 
+
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
 async def hahmo(ctx, *, arg=None):
-    channel_id = ctx.channel.id
-    if channel_id in channel_configurations:
-        config = channel_configurations[channel_id]
+    channel_id = str(ctx.channel.id)
+    config = get_channel_configurations(channel_id)
+    if config is not None:
+        system_message, assistant_message, previous_messages_str = config[1:]
+        previous_messages = json.loads(previous_messages_str)
         if arg is not None:
-            config['system_message'] = arg
-            channel_configurations[channel_id] = config  # Update the configurations
+            system_message = arg
+            set_channel_configurations(channel_id, system_message, assistant_message, previous_messages)
             await ctx.send(f"Päivitit hahmosi: {arg}")
             print(f"System message content for channel {channel_id} updated to: {arg}")
-            save_channel_configurations()  # Save changes
         else:
-            current_message = config['system_message']
-            await ctx.send(f"Hahmosi: {current_message}")
-            print(f"Current system message content for channel {channel_id}: {current_message}")
+            await ctx.send(f"Hahmosi: {system_message}")
+            print(f"Current system message content for channel {channel_id}: {system_message}")
+    else:
+        await ctx.send("Joku meni vikaan...Apuva.")
 
 @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
 async def ohje(ctx, *, arg=None):
-    channel_id = ctx.channel.id
-    if channel_id in channel_configurations:
-        config = channel_configurations[channel_id]
+    channel_id = str(ctx.channel.id)
+    config = get_channel_configurations(channel_id)
+    if config is not None:
+        system_message, assistant_message, previous_messages_str = config[1:]
+        previous_messages = json.loads(previous_messages_str)
         if arg is not None:
-            config['assistant_message'] = arg
-            channel_configurations[channel_id] = config  # Update the configurations
+            assistant_message = arg
+            set_channel_configurations(channel_id, system_message, assistant_message, previous_messages)
             await ctx.send(f"Päivitit ohjeesi: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
-            save_channel_configurations()  # Save changes
         else:
-            current_message = config['assistant_message']
-            await ctx.send(f"Ohjeesi: {current_message}")
-            print(f"Current assistant message content for channel {channel_id}: {current_message}")
-
+            await ctx.send(f"Ohjeesi: {assistant_message}")
+            print(f"Current assistant message content for channel {channel_id}: {assistant_message}")
+    else:
+        await ctx.send("Joku meni vikaan...Apuva.")
 
 
 @bot.command()

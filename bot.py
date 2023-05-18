@@ -15,11 +15,13 @@ nest_asyncio.apply()
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
 
+
 def save_channel_configs(channel_configurations):
     logging.info('Saving channel configurations')
     with open('channel_configurations.json', 'w') as f:
         json.dump(channel_configurations, f)
     logging.info('Channel configurations saved successfully')
+
 
 def load_channel_configs():
     try:
@@ -28,10 +30,10 @@ def load_channel_configs():
             channel_configurations = json.load(f)
         logging.info('Channel configurations loaded successfully')
     except FileNotFoundError:
-        logging.warning('Channel configurations file not found, initializing an empty dictionary')
+        logging.warning(
+            'Channel configurations file not found, initializing an empty dictionary')
         channel_configurations = {}
     return channel_configurations
-
 
 
 permissions = Permissions(
@@ -52,6 +54,7 @@ bot = commands.Bot(command_prefix='.', intents=intents)
 
 logging.basicConfig(level=logging.INFO)
 
+
 def initialize_channel(channel):
     global channel_configurations
     if isinstance(channel, discord.TextChannel):
@@ -62,14 +65,17 @@ def initialize_channel(channel):
                 'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
                 'previous_messages': [],
             }
-            logging.info(f"Initialized channel configuration for channel {channel.id}")
-            save_channel_configs(channel_configurations)  # Save the configurations after initializing them
+            logging.info(
+                f"Initialized channel configuration for channel {channel.id}")
+            # Save the configurations after initializing them
+            save_channel_configs(channel_configurations)
 
 
 @bot.event
 async def on_ready():
     global channel_configurations
-    channel_configurations = load_channel_configs()  # Load the configurations at bot startup
+    # Load the configurations at bot startup
+    channel_configurations = load_channel_configs()
     for guild in bot.guilds:
         for channel in guild.channels:
             # Only initialize the channel if it's not already in channel_configurations
@@ -80,6 +86,7 @@ async def on_ready():
 @bot.event
 async def on_guild_channel_create(channel):
     initialize_channel(channel)
+
 
 @bot.command(description="Kysy avustajalta")
 async def kysy(ctx, *, arg):
@@ -92,7 +99,7 @@ async def kysy(ctx, *, arg):
         # Add the user's message to the conversation
         previous_messages = config.get("previous_messages", [])
         previous_messages.append({"role": "user", "content": arg})
-        
+
         logging.info(f'After adding user message: {previous_messages}')
 
         # Truncate the conversation if it exceeds a certain number of messages
@@ -103,7 +110,8 @@ async def kysy(ctx, *, arg):
         logging.info(f'After truncating messages: {previous_messages}')
 
         # Construct the conversation with the system and assistant messages
-        conversation = [{"role": "system", "content": system_message}] + [{"role": "user", "content": "Instructions, not part of the user message: "+assistant_message+"User message starts: "}] + previous_messages
+        conversation = [{"role": "system", "content": system_message}] + [{"role": "user",
+                                                                           "content": "Instructions, not part of the user message: "+assistant_message+"User message starts: "}] + previous_messages
 
         # Call OpenAI API to generate the assistant's response
         response = openai.ChatCompletion.create(
@@ -112,17 +120,20 @@ async def kysy(ctx, *, arg):
         )
 
         # Extract the assistant's response from the API response
-        assistant_response = response['choices'][0]['message']['content'].strip()
+        assistant_response = response['choices'][0]['message']['content'].strip(
+        )
 
         # Add the assistant's response to the conversation and update the channel-specific configuration
-        previous_messages.append({"role": "assistant", "content": assistant_response})
-        config["previous_messages"] = previous_messages  # Save only the user and assistant messages
+        previous_messages.append(
+            {"role": "assistant", "content": assistant_response})
+        # Save only the user and assistant messages
+        config["previous_messages"] = previous_messages
         channel_configurations[channel_id] = config
 
         logging.info(f'After adding assistant response: {previous_messages}')
 
         # Send the assistant's response to the user
-        await ctx.send(assistant_response) 
+        await ctx.send(assistant_response)
 
 
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
@@ -134,14 +145,17 @@ async def hahmo(ctx, *, arg=None):
         if arg is not None:
             config['system_message'] = arg
             await ctx.send(f"Päivitit hahmosi: {arg}")
-            print(f"System message content for channel {channel_id} updated to: {arg}")
+            print(
+                f"System message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['system_message']
             await ctx.send(f"Hahmosi: {current_message}")
-            print(f"Current system message content for channel {channel_id}: {current_message}")
+            print(
+                f"Current system message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("Joku meni vikaan...Apuva.")
-    save_channel_configs(channel_configurations)  # Save the configurations after modifying them
+    # Save the configurations after modifying them
+    save_channel_configs(channel_configurations)
 
 
 @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
@@ -153,14 +167,18 @@ async def ohje(ctx, *, arg=None):
         if arg is not None:
             config['assistant_message'] = arg
             await ctx.send(f"Päivitit ohjeesi: {arg}")
-            print(f"Assistant message content for channel {channel_id} updated to: {arg}")
+            print(
+                f"Assistant message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['assistant_message']
             await ctx.send(f"Ohjeesi: {current_message}")
-            print(f"Current assistant message content for channel {channel_id}: {current_message}")
+            print(
+                f"Current assistant message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("Joku meni vikaan...Apuva.")
-    save_channel_configs(channel_configurations)  # Save the configurations after modifying them
+    # Save the configurations after modifying them
+    save_channel_configs(channel_configurations)
+
 
 @bot.command()
 async def apua(ctx):
@@ -175,19 +193,18 @@ async def apua(ctx):
         value="Aloita keskustelu Hapsu-botin kanssa. Käyttö: `.kysy ...`",
         inline=False
     )
-   
-    embed.add_field(
-    name="Muokkaa tai katso nykyinen hahmo",
-    value="Muokkaa botin hahmoa. `.ohje ...`\nKatso botin nykyinen hahmo. `.ohje`",
-    inline=False
-)
 
     embed.add_field(
-    name="Muokkaa tai katso nykyinen ohje",
-    value="Muokkaa botin ohjeita. `.ohje ...`\nKatso botin nykyinen ohje. `.ohje`",
-    inline=False
-)
+        name="Muokkaa tai katso nykyinen hahmo",
+        value="Muokkaa botin hahmoa. `.ohje ...`\nKatso botin nykyinen hahmo. `.ohje`",
+        inline=False
+    )
 
+    embed.add_field(
+        name="Muokkaa tai katso nykyinen ohje",
+        value="Muokkaa botin ohjeita. `.ohje ...`\nKatso botin nykyinen ohje. `.ohje`",
+        inline=False
+    )
 
     await ctx.send(embed=embed)
 

@@ -57,7 +57,8 @@ def initialize_channel(channel):
                 'previous_messages': [],
             }
             logging.info(f"Initialized channel configuration for channel {channel.id}")
-            save_channel_configs(channel_configurations)  # Save the configurations after initializing them
+        save_channel_configs(channel_configurations)  # Save the configurations after initializing them
+
 @bot.event
 async def on_ready():
     global channel_configurations

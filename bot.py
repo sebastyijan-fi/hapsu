@@ -83,7 +83,7 @@ async def on_guild_channel_create(channel):
 
 @bot.command(description="Kysy avustajalta")
 async def kysy(ctx, *, arg):
-    channel_id = ctx.channel.id
+    channel_id = str(ctx.channel.id)
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         system_message = config.get('system_message', "")
@@ -122,7 +122,7 @@ async def kysy(ctx, *, arg):
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
 async def hahmo(ctx, *, arg=None):
     global channel_configurations  # Declare that you're using the global variable here
-    channel_id = ctx.channel.id
+    channel_id = str(ctx.channel.id)
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
@@ -141,7 +141,7 @@ async def hahmo(ctx, *, arg=None):
 @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
 async def ohje(ctx, *, arg=None):
     global channel_configurations
-    channel_id = ctx.channel.id
+    channel_id = str(ctx.channel.id)
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:

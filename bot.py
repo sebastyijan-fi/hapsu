@@ -99,7 +99,7 @@ async def kysy(ctx, *, arg):
             previous_messages = previous_messages[-max_messages:]
 
         # Construct the conversation with the system and assistant messages
-        conversation = [{"role": "system", "content": system_message}] + [{"role": "user", "content": assistant_message}] + previous_messages
+        conversation = [{"role": "system", "content": system_message}] + [{"role": "user", "content": "Instructions, not part of the user message: "+assistant_message+"User message starts: "}] + previous_messages
 
         # Call OpenAI API to generate the assistant's response
         response = openai.ChatCompletion.create(

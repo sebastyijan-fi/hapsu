@@ -50,6 +50,7 @@ logging.basicConfig(level=logging.INFO)
 def initialize_channel(channel):
     global channel_configurations
     if isinstance(channel, discord.TextChannel):
+        # Do not overwrite the existing configuration
         if channel.id not in channel_configurations:
             channel_configurations[channel.id] = {
                 'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
@@ -57,12 +58,12 @@ def initialize_channel(channel):
                 'previous_messages': [],
             }
             logging.info(f"Initialized channel configuration for channel {channel.id}")
-        save_channel_configs(channel_configurations)  # Save the configurations after initializing them
+            save_channel_configs(channel_configurations)  # Save the configurations after initializing them
 
 @bot.event
 async def on_ready():
     global channel_configurations
-    channel_configurations = load_channel_configs()
+    channel_configurations = load_channel_configs()  # Load the configurations at bot startup
     for guild in bot.guilds:
         for channel in guild.channels:
             # Only initialize the channel if it's not already in channel_configurations

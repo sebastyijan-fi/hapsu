@@ -6,6 +6,7 @@ from discord import Permissions
 import os
 from dotenv import load_dotenv
 import openai
+import json
 import logging
 
 load_dotenv()
@@ -14,7 +15,17 @@ nest_asyncio.apply()
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')
 
-channel_configurations = {}
+def save_channel_configs():
+    with open('channel_configurations.json', 'w') as f:
+        json.dump(channel_configurations, f)
+        
+def load_channel_configs():
+    global channel_configurations
+    try:
+        with open('channel_configurations.json', 'r') as f:
+            channel_configurations = json.load(f)
+    except FileNotFoundError:
+        channel_configurations = {}
 
 permissions = Permissions(
     add_reactions=True,
@@ -95,12 +106,14 @@ async def kysy(ctx, *, arg):
 @bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
 async def hahmo(ctx, *, arg=None):
     channel_id = ctx.channel.id
+    channel_configurations = load_channel_configs()
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
             config['system_message'] = arg
             await ctx.send(f"Päivitit hahmosi: {arg}")
             print(f"System message content for channel {channel_id} updated to: {arg}")
+            save_channel_configs(channel_configurations)
         else:
             current_message = config['system_message']
             await ctx.send(f"Hahmosi: {current_message}")
@@ -112,12 +125,14 @@ async def hahmo(ctx, *, arg=None):
 @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
 async def ohje(ctx, *, arg=None):
     channel_id = ctx.channel.id
+    channel_configurations = load_channel_configs()
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
             config['assistant_message'] = arg
             await ctx.send(f"Päivitit ohjeesi: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
+            save_channel_configs(channel_configurations)
         else:
             current_message = config['assistant_message']
             await ctx.send(f"Ohjeesi: {current_message}")
@@ -153,12 +168,6 @@ async def apua(ctx):
 
 
     await ctx.send(embed=embed)
-
-
-        
-@bot.command()
-async def test(ctx):
-    await ctx.send("Backend response received. Bot is functioning properly.")
 
 
 bot.run(BOTKEY)

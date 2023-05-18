@@ -13,24 +13,16 @@ load_dotenv()
 nest_asyncio.apply()
 
 # Persisten data layer in JSON
-# Your JSON file reading/writing functions
 def load_channel_configurations():
     try:
         with open("channel_configurations.json", "r") as file:
-            logging.debug("Opened channel_configurations.json for reading")
-            configurations = json.load(file)
-            logging.debug(f"Loaded configurations: {configurations}")
-            return configurations
+            return json.load(file)
     except FileNotFoundError:
-        logging.warning("channel_configurations.json not found, returning empty dict")
         return {}
 
 def save_channel_configurations():
     with open("channel_configurations.json", "w") as file:
-        logging.debug("Opened channel_configurations.json for writing")
         json.dump(channel_configurations, file)
-        logging.debug(f"Wrote configurations: {channel_configurations}")
-
 
 openai.api_key = os.getenv("ATOKEN")
 BOTKEY = os.getenv('BOTKEY')

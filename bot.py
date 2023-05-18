@@ -14,7 +14,7 @@ nest_asyncio.apply()
 
 # Persisten data layer in JSON
 # Your JSON file reading/writing functions
-def load_channel_configurations():
+async def load_channel_configurations():
     try:
         with open("channel_configurations.json", "r") as file:
             logging.debug("Opened channel_configurations.json for reading")
@@ -24,6 +24,7 @@ def load_channel_configurations():
     except FileNotFoundError:
         logging.warning("channel_configurations.json not found, returning empty dict")
         return {}
+
 
 def save_channel_configurations():
     with open("channel_configurations.json", "w") as file:
@@ -68,13 +69,12 @@ def initialize_channel(channel):
 @bot.event
 async def on_ready():
     global channel_configurations
-    saved_configurations = load_channel_configurations()
+    channel_configurations = await load_channel_configurations()  # await added here
     for guild in bot.guilds:
         for channel in guild.channels:
-            if channel.id in saved_configurations:
-                channel_configurations[channel.id] = saved_configurations[channel.id]
-            else:
+            if channel.id not in channel_configurations:
                 initialize_channel(channel)
+
 
 @bot.event
 async def on_guild_channel_create(channel):

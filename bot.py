@@ -18,18 +18,15 @@ BOTKEY = os.getenv('BOTKEY')
 def save_channel_configs(channel_configurations):
     with open('channel_configurations.json', 'w') as f:
         json.dump(channel_configurations, f)
-    print(f"Saved configurations: {channel_configurations}")  # Print out the configurations after saving
 
-
+        
 def load_channel_configs():
     try:
         with open('channel_configurations.json', 'r') as f:
             channel_configurations = json.load(f)
     except FileNotFoundError:
         channel_configurations = {}
-    print(f"Loaded configurations: {channel_configurations}")  # Print out the configurations after loading
     return channel_configurations
-
 
 
 permissions = Permissions(
@@ -66,9 +63,10 @@ def initialize_channel(channel):
 @bot.event
 async def on_ready():
     global channel_configurations
-    channel_configurations = load_channel_configs()
+    channel_configurations = load_channel_configs()  # Load the configurations at bot startup
     for guild in bot.guilds:
         for channel in guild.channels:
+            # Only initialize the channel if it's not already in channel_configurations
             if channel.id not in channel_configurations:
                 initialize_channel(channel)
 
@@ -135,21 +133,21 @@ async def hahmo(ctx, *, arg=None):
 
 @bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
 async def ohje(ctx, *, arg=None):
+    global channel_configurations
     channel_id = ctx.channel.id
-    channel_configurations = load_channel_configs()
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
             config['assistant_message'] = arg
             await ctx.send(f"Päivitit ohjeesi: {arg}")
             print(f"Assistant message content for channel {channel_id} updated to: {arg}")
-            save_channel_configs(channel_configurations)
         else:
             current_message = config['assistant_message']
             await ctx.send(f"Ohjeesi: {current_message}")
             print(f"Current assistant message content for channel {channel_id}: {current_message}")
     else:
         await ctx.send("Joku meni vikaan...Apuva.")
+    save_channel_configs(channel_configurations)  # Save the configurations after modifying them
 
 @bot.command()
 async def apua(ctx):

@@ -23,7 +23,7 @@ Here are the commands you can use:
 - `.ask`: Use this command to ask Hapsu a question. Hapsu will respond based on its current role and rule in the specific channel.
 - `.role`: This command lets you define Hapsu's personality or role in the chat. For example, `.role Pretend you are a Pirate` would instruct Hapsu to behave as a Pirate.
 - `.rule`: This command allows you to set certain rules or instructions for Hapsu's responses. For example, `.rule Answer in 60 words max` would instruct Hapsu to answer with maximum of 60 words. Note that this command is part of the user message, but not part of the conversation history.
-- `.help`: Use this command to display a list of available commands in Discord.
+- `.helper`: Use this command to display a list of available commands in Discord.
 
 Each channel has its own settings for `role` and `rule`, and maintains its own message history, Experiment with these commands to see what works best for you!
 

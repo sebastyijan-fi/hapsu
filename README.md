@@ -12,6 +12,17 @@ Developed with a focus on user-friendliness, Hapsu is designed to be accessible 
   
 - **Ease of Use**: I have strived to make Hapsu as easy to use as possible. You don't need advanced technical skills to set it up and use it.
 
+## Usage Guide
+
+Hapsu is designed to be flexible and adaptable to the needs of different channels. Here are some key commands you can use:
+
+- `.kysy`: Use this command to ask Hapsu a question. Hapsu will respond based on its current settings and capabilities.
+- `.hahmo`: This command lets you define Hapsu's personality or role in the chat. For example, `.hahmo Friendly Helper` would instruct Hapsu to behave as a friendly helper. This setting is specific to each channel, allowing for a customized experience.
+- `.ohje`: This command allows you to set certain rules or instructions for Hapsu's responses. For example, `.ohje Respond in JSON format` would instruct Hapsu to format its responses in JSON. Note that this command is part of the user message, providing a more interactive and dynamic conversation.
+- `.apua`: Use this command to display a list of available commands in Discord. It's a great way to learn what Hapsu can do or to remind yourself of a command.
+
+Each channel has its own settings for `hahmo` and `ohje`, and maintains its own message history, providing a uniquely tailored experience for every channel. Explore and experiment with these commands to make Hapsu work best for your needs!
+
 ## Quick Setup
 
 Setting up Hapsu on your Discord server is easy and straightforward with our detailed [wiki](https://github.com/sebastyijan-fi/hapsu/wiki). 
@@ -33,6 +44,7 @@ This command will download the `run_bot.sh` script from the repository, make it 
 - Prompt you for your OpenAI and Discord Bot API keys.
 - Save these keys to a `.env` file.
 - Install necessary dependencies.
+- Keep everything updated
 - Start the bot.
 
 

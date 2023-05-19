@@ -1,45 +1,40 @@
-# Hapsu Discord-botti
+# Hapsu Discord Bot
 
-Hapsu on avustaja Discord-botti, joka hyödyntää OpenAI:n tekstigenerointipalvelua vastatakseen käyttäjän viesteihin. Botti tarjoaa avustavaa tekoälyä erilaisiin keskusteluihin ja kysymyksiin.
+Hapsu is a versatile Discord bot that uses OpenAI's Language Model (LLM) to assist you in a variety of tasks. Whether you need help crafting emails, studying, or just carrying out casual conversations, Hapsu is your go-to assistant. It has a persistent memory window of the last three messages, saved to a JSON file, which allows it to maintain context in ongoing conversations.
 
-## Miksi käyttää Hapsu-bottia?
+Developed with a focus on user-friendliness, Hapsu is designed to be accessible to everyone. Its setup process is straightforward and requires only minimal technical knowledge.
 
-- Automaattiset vastaukset: Hapsu-botti pystyy antamaan automaattisia vastauksia käyttäjien viesteihin. Voit määrittää asetukset eri kanaville ja antaa botille omat vastausviestit.
-- Kustomoitava avustaja: Voit säätää Hapsu-botin avustajaviestien sisältöä ja luoda oman persoonallisen avustajan käyttäjien keskusteluihin.
-- Helppo integraatio: Hapsu-botti on helppo integroida Discord-palveluun ja se toimii reaaliajassa vastaten käyttäjien viesteihin.
+## Why Use Hapsu?
 
-## Esimerkkejä käytöstä
+- **Versatility**: Hapsu is not just an ordinary chatbot. It's an AI-powered assistant that can help you write emails, study for exams, answer your queries, and much more.
+  
+- **Persistence**: Hapsu remembers the last three messages in the conversation, maintaining the context and continuity.
+  
+- **Ease of Use**: I have strived to make Hapsu as easy to use as possible. You don't need advanced technical skills to set it up and use it.
 
-1. Keskusteluavustaja: Käyttäjä voi aloittaa keskustelun kirjoittamalla viestin, ja Hapsu-botti vastaa automaattisesti.
-   Käyttö: `.kysy Mikä on elämän tarkoitus?`
+## Quick Setup
 
-2. Asetusten muokkaus: Käyttäjä voi muokata botin asetuksia, kuten avustajaviestin sisältöä.
-   Käyttö: `.ohje Vastaa aina aloittaen sanoilla Cha-Cha-Cha`
+Setting up Hapsu on your Discord server is easy and straightforward with our detailed [wiki](https://github.com/sebastyijan-fi/hapsu/wiki). 
 
-3. Kustomoitu avustaja: Käyttäjä voi muokata botin avustajaviestin sisältöä kanavakohtaisesti.
-   Käyttö: `.hahmo Olet mukava, kohtelias avustaja!`
+1. **Create Necessary Accounts**: Follow the instructions on our wiki to create the required accounts and obtain the necessary API keys.
 
-## Huomioita
+2. **Set Up a Server**: Use our wiki to guide you through the process of setting up a server on DigitalOcean to host Hapsu.
 
-- Hapsu-botti käyttää OpenAI:n tekstigenerointipalvelua, joten varmista, että sinulla on tarvittava API-avain.
-- Hapsu-botti voi vaatia mukauttamista ja laajentamista riippuen käyttötapauksista ja vaatimuksista.
-- Muista noudattaa Discordin käyttöehtoja ja ohjeita käyttäessäsi bottia.
+If you already have your own server, accounts, and API keys, you can skip these steps and proceed to run the script:
 
-## Hapsu-bottin asennus ja käyttöönotto
+3. **Run the Script**: 
 
-Hapsu-bottin asentaminen ja käyttöönotto on helppoa seuraavien ohjeiden avulla:
-
-1. **Suorita asennusskripti**: Suorita `run_bot.sh`-skripti. Tämä skripti hoitaa kaiken tarvittavan asennuksen, kuten riippuvuuksien asennuksen ja palvelimen konfiguroinnin.
-
-2. **Anna API-avaimet**: Skripti pyytää sinua syöttämään OpenAI:n ja Discordin API-avaimet. Avaimet tallennetaan `.env`-tiedostoon.
-
-3. **Käynnistä botti**: Skripti käynnistää botin automaattisesti. Voit tarkistaa botin tilan PM2:n avulla komennolla `pm2 status`.
-
-Huomaa: Skripti päivittää palvelimen ja tekee git-pullin päivittäin keskiyöllä.
-
-**Linux komento asennukselle**
 ```bash
 sudo curl -H 'Cache-Control: no-cache' -O https://raw.githubusercontent.com/sebastyijan-fi/hapsu/github/run_bot.sh && chmod +x run_bot.sh && ./run_bot.sh
+```
+
+This command will download the `run_bot.sh` script from the repository, make it executable, and run it. The script will:
+
+- Prompt you for your OpenAI and Discord Bot API keys.
+- Save these keys to a `.env` file.
+- Install necessary dependencies.
+- Start the bot.
+
 
 
 

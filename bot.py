@@ -181,7 +181,7 @@ async def rule(ctx, *, arg=None):
     save_channel_configs(channel_configurations)
 
 @bot.command()
-async def help(ctx):
+async def helper(ctx):
     embed = discord.Embed(
         title="Hapsu Bot Instructions",
         description="Hapsu is an assistant Discord bot that utilizes OpenAI's text generation service to respond to user messages. Here are the available commands:",

@@ -25,7 +25,7 @@ Here are the commands you can use:
 - `.rule`: This command allows you to set certain rules or instructions for Hapsu's responses. For example, `.rule Answer in 60 words max` would instruct Hapsu to answer with maximum of 60 words. Note that this command is part of the user message, but not part of the conversation history.
 - `.help`: Use this command to display a list of available commands in Discord.
 
-Each channel has its own settings for `role` and `rule`, and maintains its own message history, Experiment with these commands to what works best for you!
+Each channel has its own settings for `role` and `rule`, and maintains its own message history, Experiment with these commands to see what works best for you!
 
 ## Quick Setup recap
 
@@ -43,9 +43,9 @@ sudo curl -H 'Cache-Control: no-cache' -O https://raw.githubusercontent.com/seba
 
 This command will download the `run_bot.sh` script from the repository, make it executable, and run it. The script will:
 
-- Prompt you to enter your OpenAI API keys and Discord Bot token.
-- Save these keys to a `.env` file.
 - Install necessary dependencies.
+- Prompt you to enter your OpenAI API keys and Discord Bot token with nano editor.
+- Save these keys to a `.env` file.
 - Keep everything updated with a cronjob.
 - Start the bot and keep it running.
 

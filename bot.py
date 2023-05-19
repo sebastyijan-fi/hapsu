@@ -61,8 +61,8 @@ def initialize_channel(channel):
         # Do not overwrite the existing configuration
         if str(channel.id) not in channel_configurations:  # Convert channel.id to str
             channel_configurations[str(channel.id)] = {  # Convert channel.id to str
-                'system_message': "Olet kiltti avustaja botti. Vastaat aina kohteliaasti.",
-                'assistant_message': "Aloita jokainen vastaus sanoilla Cha-Cha-Cha",
+                'system_message': "You are a friendly assistant called Hapsu.",
+                'assistant_message': "Start every interaction with Cha-Cha-Cha...",
                 'previous_messages': [],
             }
             logging.info(
@@ -88,8 +88,8 @@ async def on_guild_channel_create(channel):
     initialize_channel(channel)
 
 
-@bot.command(description="Kysy avustajalta")
-async def kysy(ctx, *, arg):
+@bot.command(description="Ask the assistant")
+async def ask(ctx, *, arg):
     channel_id = str(ctx.channel.id)
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
@@ -136,77 +136,76 @@ async def kysy(ctx, *, arg):
         await ctx.send(assistant_response)
 
 
-@bot.command(description="Luo ja hallitse avustajan hahmoa. Voit määrittää 'järjestelmäviestin', joka ohjeistaa AI:n käyttäytymään tietyllä tavalla.")
-async def hahmo(ctx, *, arg=None):
+@bot.command(description="Create and manage the assistant's role. You can specify a 'system message' that instructs the AI to behave in a certain way.")
+async def role(ctx, *, arg=None):
     global channel_configurations  # Declare that you're using the global variable here
     channel_id = str(ctx.channel.id)
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
             config['system_message'] = arg
-            await ctx.send(f"Päivitit hahmosi: {arg}")
+            await ctx.send(f"You updated your role: {arg}")
             print(
                 f"System message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['system_message']
-            await ctx.send(f"Hahmosi: {current_message}")
+            await ctx.send(f"Your role: {current_message}")
             print(
                 f"Current system message content for channel {channel_id}: {current_message}")
     else:
-        await ctx.send("Joku meni vikaan...Apuva.")
+        await ctx.send("Something went wrong... Help.")
     # Save the configurations after modifying them
     save_channel_configs(channel_configurations)
 
 
-@bot.command(description="Päivitä tai näytä avustajan ohje. Tämä ohje antaa suoran neuvon tai ohjeistuksen avustajalle, joka vaikuttaa sen vastauksiin.")
-async def ohje(ctx, *, arg=None):
+
+@bot.command(description="Update or display the assistant's rule. This rule provides direct advice or instructions to the assistant, affecting its responses.")
+async def rule(ctx, *, arg=None):
     global channel_configurations
     channel_id = str(ctx.channel.id)
     if channel_id in channel_configurations:
         config = channel_configurations[channel_id]
         if arg is not None:
             config['assistant_message'] = arg
-            await ctx.send(f"Päivitit ohjeesi: {arg}")
+            await ctx.send(f"You updated your rule: {arg}")
             print(
                 f"Assistant message content for channel {channel_id} updated to: {arg}")
         else:
             current_message = config['assistant_message']
-            await ctx.send(f"Ohjeesi: {current_message}")
+            await ctx.send(f"Your rule: {current_message}")
             print(
                 f"Current assistant message content for channel {channel_id}: {current_message}")
     else:
-        await ctx.send("Joku meni vikaan...Apuva.")
+        await ctx.send("Something went wrong... Help.")
     # Save the configurations after modifying them
     save_channel_configs(channel_configurations)
 
-
 @bot.command()
-async def apua(ctx):
+async def help(ctx):
     embed = discord.Embed(
-        title="Hapsu Botin Ohjeet",
-        description="Hapsu on avustaja Discord-botti, joka hyödyntää OpenAI:n tekstigenerointipalvelua vastatakseen käyttäjän viesteihin. Tässä ovat käytettävissä olevat komennot:",
+        title="Hapsu Bot Instructions",
+        description="Hapsu is an assistant Discord bot that utilizes OpenAI's text generation service to respond to user messages. Here are the available commands:",
         color=discord.Color.blue()
     )
 
     embed.add_field(
-        name="Aloita keskustely",
-        value="Aloita keskustelu Hapsu-botin kanssa. Käyttö: `.kysy ...`",
+        name="Start a Conversation",
+        value="Start a conversation with the Hapsu bot. Usage: `.ask ...`",
         inline=False
     )
 
     embed.add_field(
-        name="Muokkaa tai katso nykyinen hahmo",
-        value="Muokkaa botin hahmoa. `.ohje ...`\nKatso botin nykyinen hahmo. `.ohje`",
+        name="Modify or View Current Role",
+        value="Modify the bot's role. `.role ...`\nView the bot's current role. `.role`",
         inline=False
     )
 
     embed.add_field(
-        name="Muokkaa tai katso nykyinen ohje",
-        value="Muokkaa botin ohjeita. `.ohje ...`\nKatso botin nykyinen ohje. `.ohje`",
+        name="Modify or View Current Rule",
+        value="Modify the bot's rules. `.rule ...`\nView the bot's current rule. `.rule`",
         inline=False
     )
 
     await ctx.send(embed=embed)
-
 
 bot.run(BOTKEY)
